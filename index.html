@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>小学英语词库</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:#f0f4ff;min-height:100vh;display:flex;align-items:center;justify-content:center}
+#app{display:flex;flex-direction:column;align-items:center;padding:20px 16px 28px;gap:14px;width:100%;max-width:440px}
+.grade-tabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.grade-btn{padding:7px 16px;border-radius:20px;font-size:13px;font-weight:500;border:1px solid #d1d1d6;background:#fff;color:#6e6e73;cursor:pointer;transition:all .15s}
+.grade-btn:hover{background:#f0f0f5;color:#1d1d1f}
+.grade-btn.active{background:#0071e3;color:#fff;border-color:transparent}
+.card{width:100%;background:#fff;border:1px solid #e5e5ea;border-radius:24px;padding:24px 20px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;min-height:310px;box-shadow:0 2px 16px rgba(0,0,0,.07)}
+.word-en{font-size:40px;font-weight:700;color:#1d1d1f;letter-spacing:-.02em;text-align:center;line-height:1.1}
+.word-khmer{font-family:'Khmer OS','Kantumruy Pro','Kantumruy','Khmer MN','Khmer Sangam MN','Noto Sans Khmer',sans-serif;font-size:20px;color:#1a3a6b;text-align:center;line-height:1.6;letter-spacing:.02em}
+.word-zh{font-size:14px;color:#8e8e93;font-style:italic;text-align:center}
+.stage{width:160px;height:120px;display:flex;align-items:center;justify-content:center;position:relative}
+.anim-bounce .shape{animation:aBounce .6s cubic-bezier(.36,.07,.19,.97) infinite alternate}
+@keyframes aBounce{0%{transform:translateY(0) scaleY(1)}85%{transform:translateY(0) scaleY(1)}100%{transform:translateY(-28px) scaleY(.9)}}
+.anim-rise .shape{animation:aRise 2s ease-in-out infinite alternate}
+@keyframes aRise{0%{transform:translateY(12px) scale(.95);opacity:.7}100%{transform:translateY(-12px) scale(1.05);opacity:1}}
+.anim-sway .shape{animation:aSway .9s ease-in-out infinite alternate;transform-origin:center bottom}
+@keyframes aSway{0%{transform:rotate(-18deg)}100%{transform:rotate(18deg)}}
+.anim-pulse .shape{animation:aPulse 1.2s ease-in-out infinite alternate}
+@keyframes aPulse{0%{transform:scale(.85);opacity:.6}100%{transform:scale(1.15);opacity:1}}
+.anim-spin .shape{animation:aSpin 2.5s linear infinite}
+@keyframes aSpin{to{transform:rotate(360deg)}}
+.anim-wave .shape{animation:aWave 1.4s ease-in-out infinite}
+@keyframes aWave{0%,100%{transform:translateX(-14px) translateY(0)}50%{transform:translateX(14px) translateY(-10px)}}
+.anim-flip .shape{animation:aFlip 2s ease-in-out infinite}
+@keyframes aFlip{0%,100%{transform:rotateY(0)}50%{transform:rotateY(180deg)}}
+.anim-shake .shape{animation:aShake .5s ease-in-out infinite alternate}
+@keyframes aShake{0%{transform:translateX(-8px) rotate(-4deg)}100%{transform:translateX(8px) rotate(4deg)}}
+.shadow-dot{width:44px;height:10px;border-radius:50%;background:rgba(0,0,0,.12);position:absolute;bottom:4px;left:50%;transform:translateX(-50%);animation:aShadow .6s ease-in-out infinite alternate}
+@keyframes aShadow{0%{transform:translateX(-50%) scaleX(1);opacity:.15}100%{transform:translateX(-50%) scaleX(.5);opacity:.04}}
+.controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.controls2{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;font-weight:700;user-select:none;border-radius:22px;padding:0 18px;height:58px;transition:transform .12s cubic-bezier(.34,1.56,.64,1),filter .1s,box-shadow .12s;position:relative}
+.btn:hover{filter:brightness(1.07)}
+.btn:active{transform:scale(.88) translateY(3px)!important;filter:brightness(.95)}
+.btn-nav{width:72px;font-size:24px;background:linear-gradient(160deg,#ffe066 0%,#ffb800 100%);color:#7a4f00;box-shadow:0 6px 0 #c88a00,0 8px 16px rgba(200,138,0,.3)}
+.btn-nav:hover{transform:translateY(-2px)}
+.btn-nav:active{box-shadow:0 2px 0 #c88a00!important}
+.btn-play{min-width:130px;font-size:16px;background:linear-gradient(160deg,#5ec8ff 0%,#0071e3 100%);color:#fff;box-shadow:0 6px 0 #004fa3,0 8px 16px rgba(0,113,227,.35)}
+.btn-play:hover{transform:translateY(-2px)}
+.btn-play:active{box-shadow:0 2px 0 #004fa3!important}
+.btn-auto{min-width:148px;font-size:16px;background:linear-gradient(160deg,#ff9de2 0%,#c850c0 100%);color:#fff;box-shadow:0 6px 0 #8f0f8a,0 8px 16px rgba(200,80,192,.35)}
+.btn-auto:hover{transform:translateY(-2px)}
+.btn-auto:active{box-shadow:0 2px 0 #8f0f8a!important}
+.btn-auto.on{background:linear-gradient(160deg,#ffd166 0%,#ef8c1a 100%);box-shadow:0 6px 0 #a85900,0 8px 16px rgba(239,140,26,.35);animation:autoPulse 1s ease-in-out infinite alternate}
+@keyframes autoPulse{0%{filter:brightness(1)}100%{filter:brightness(1.12)}}
+.btn-know{min-width:148px;font-size:16px;background:linear-gradient(160deg,#6effa0 0%,#00b945 100%);color:#fff;box-shadow:0 6px 0 #007a2e,0 8px 16px rgba(0,185,69,.35)}
+.btn-know:hover{transform:translateY(-2px)}
+.btn-know:active{box-shadow:0 2px 0 #007a2e!important}
+.meta{display:flex;gap:16px;align-items:center}
+.counter{font-size:14px;color:#8e8e93;font-weight:500}
+.grade-label{font-size:14px;font-weight:700;color:#0071e3}
+#confettiCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="grade-tabs" id="gradeTabs"></div>
+  <div class="card">
+    <div class="word-en" id="wordEn"></div>
+    <div class="stage" id="stage"></div>
+    <div class="word-khmer" id="wordKhmer"></div>
+    <div class="word-zh" id="wordZh"></div>
+  </div>
+  <div class="controls">
+    <button class="btn btn-nav" id="btnPrev">&#x2B05;&#xFE0F; &#x1F422;</button>
+    <button class="btn btn-play" id="btnPlay">&#x1F4E2; &#x542C;&#x58F0;&#x97F3;</button>
+    <button class="btn btn-nav" id="btnNext">&#x1F680; &#x27A1;&#xFE0F;</button>
+  </div>
+  <div class="controls2">
+    <button class="btn btn-auto" id="btnAuto">&#x23F0; &#x81EA;&#x52A8;&#x8FDE;&#x64AD;</button>
+    <button class="btn btn-know" id="btnKnow">&#x1F389; &#x6211;&#x4F1A;&#x554A;&#xFF01;</button>
+  </div>
+  <div class="meta">
+    <span class="grade-label" id="gradeLabel"></span>
+    <span class="counter" id="counter"></span>
+  </div>
+</div>
+<canvas id="confettiCanvas"></canvas>
+<script>
+const englishVocabulary = {
+grade1:[
+{word:"Sun",meaning:"太阳",khmer:"ព្រះអាទិត្យ",animationType:"pulse"},
+{word:"Moon",meaning:"月亮",khmer:"ព្រះច័ន្ទ",animationType:"rise"},
+{word:"Star",meaning:"星星",khmer:"ផ្កាយ",animationType:"pulse"},
+{word:"Sky",meaning:"天空",khmer:"មេឃ",animationType:"rise"},
+{word:"Cloud",meaning:"云",khmer:"ពពក",animationType:"rise"},
+{word:"Rain",meaning:"雨",khmer:"ភ្លៀង",animationType:"wave"},
+{word:"Wind",meaning:"风",khmer:"ខ្យល់",animationType:"sway"},
+{word:"Tree",meaning:"树",khmer:"ដើមឈើ",animationType:"sway"},
+{word:"Flower",meaning:"花",khmer:"ផ្កា",animationType:"sway"},
+{word:"Grass",meaning:"草",khmer:"ស្មៅ",animationType:"sway"},
+{word:"Bird",meaning:"鸟",khmer:"បក្សី",animationType:"wave"},
+{word:"Fish",meaning:"鱼",khmer:"ត្រី",animationType:"wave"},
+{word:"Dog",meaning:"狗",khmer:"ឆ្កែ",animationType:"bounce"},
+{word:"Cat",meaning:"猫",khmer:"ឆ្មា",animationType:"sway"},
+{word:"Pig",meaning:"猪",khmer:"ជ្រូក",animationType:"bounce"},
+{word:"Cow",meaning:"牛",khmer:"គោ",animationType:"sway"},
+{word:"Hen",meaning:"母鸡",khmer:"មាន់ញី",animationType:"shake"},
+{word:"Duck",meaning:"鸭子",khmer:"ទា",animationType:"wave"},
+{word:"Ant",meaning:"蚂蚁",khmer:"ស្រមោច",animationType:"wave"},
+{word:"Bee",meaning:"蜜蜂",khmer:"ឃ្មុំ",animationType:"spin"},
+{word:"Ball",meaning:"球",khmer:"បាល់",animationType:"bounce"},
+{word:"Book",meaning:"书",khmer:"សៀវភៅ",animationType:"flip"},
+{word:"Bag",meaning:"包",khmer:"កាបូប",animationType:"sway"},
+{word:"Pen",meaning:"笔",khmer:"ប៊ិច",animationType:"shake"},
+{word:"Box",meaning:"箱子",khmer:"ប្រអប់",animationType:"bounce"},
+{word:"Bed",meaning:"床",khmer:"គ្រែ",animationType:"rise"},
+{word:"Cup",meaning:"杯子",khmer:"ពែង",animationType:"sway"},
+{word:"Hat",meaning:"帽子",khmer:"មួក",animationType:"bounce"},
+{word:"Toy",meaning:"玩具",khmer:"រំដែង",animationType:"bounce"},
+{word:"Car",meaning:"汽车",khmer:"រថយន្ត",animationType:"wave"},
+{word:"Bus",meaning:"公共汽车",khmer:"រថយន្តក្រុង",animationType:"wave"},
+{word:"Hand",meaning:"手",khmer:"ដៃ",animationType:"wave"},
+{word:"Eye",meaning:"眼睛",khmer:"ភ្នែក",animationType:"pulse"},
+{word:"Nose",meaning:"鼻子",khmer:"ច្រមុះ",animationType:"shake"},
+{word:"Ear",meaning:"耳朵",khmer:"ត្រចៀក",animationType:"sway"},
+{word:"Mouth",meaning:"嘴巴",khmer:"មាត់",animationType:"pulse"},
+{word:"Head",meaning:"头",khmer:"ក្បាល",animationType:"bounce"},
+{word:"Foot",meaning:"脚",khmer:"ជើង",animationType:"bounce"},
+{word:"Leg",meaning:"腿",khmer:"ស្មា",animationType:"sway"},
+{word:"Arm",meaning:"手臂",khmer:"ដៃ",animationType:"wave"},
+{word:"Apple",meaning:"苹果",khmer:"ផ្លែប៉ោម",animationType:"bounce"},
+{word:"Pear",meaning:"梨",khmer:"ផ្លែពែ",animationType:"bounce"},
+{word:"Milk",meaning:"牛奶",khmer:"ទឹកដោះ",animationType:"rise"},
+{word:"Egg",meaning:"鸡蛋",khmer:"ពងមាន់",animationType:"bounce"},
+{word:"Rice",meaning:"米饭",khmer:"បាយ",animationType:"pulse"},
+{word:"Cake",meaning:"蛋糕",khmer:"នំ",animationType:"bounce"},
+{word:"Bread",meaning:"面包",khmer:"នំប៉័ង",animationType:"sway"},
+{word:"Juice",meaning:"果汁",khmer:"ទឹកផ្លែឈើ",animationType:"wave"},
+{word:"Tea",meaning:"茶",khmer:"តែ",animationType:"rise"},
+{word:"Water",meaning:"水",khmer:"ទឹក",animationType:"wave"},
+{word:"One",meaning:"数字一",khmer:"មួយ",animationType:"spin"},
+{word:"Two",meaning:"数字二",khmer:"ពីរ",animationType:"spin"},
+{word:"Three",meaning:"数字三",khmer:"បី",animationType:"spin"},
+{word:"Four",meaning:"数字四",khmer:"បួន",animationType:"spin"},
+{word:"Five",meaning:"数字五",khmer:"ប្រាំ",animationType:"spin"},
+{word:"Six",meaning:"数字六",khmer:"ប្រាំមួយ",animationType:"spin"},
+{word:"Seven",meaning:"数字七",khmer:"ប្រាំពីរ",animationType:"spin"},
+{word:"Eight",meaning:"数字八",khmer:"ប្រាំបី",animationType:"spin"},
+{word:"Nine",meaning:"数字九",khmer:"ប្រាំបួន",animationType:"spin"},
+{word:"Ten",meaning:"数字十",khmer:"ដប់",animationType:"spin"},
+{word:"Red",meaning:"红色",khmer:"ពណ៌ក្រហម",animationType:"pulse"},
+{word:"Blue",meaning:"蓝色",khmer:"ពណ៌ខៀវ",animationType:"wave"},
+{word:"Green",meaning:"绿色",khmer:"ពណ៌បៃតង",animationType:"rise"},
+{word:"Yellow",meaning:"黄色",khmer:"ពណ៌លឿង",animationType:"pulse"},
+{word:"White",meaning:"白色",khmer:"ពណ៌ស",animationType:"rise"},
+{word:"Black",meaning:"黑色",khmer:"ពណ៌ខ្មៅ",animationType:"flip"},
+{word:"Big",meaning:"大的",khmer:"ធំ",animationType:"pulse"},
+{word:"Small",meaning:"小的",khmer:"តូច",animationType:"bounce"},
+{word:"Hot",meaning:"热的",khmer:"ក្តៅ",animationType:"pulse"},
+{word:"Cold",meaning:"冷的",khmer:"ត្រជាក់",animationType:"rise"},
+{word:"Good",meaning:"好的",khmer:"ល្អ",animationType:"bounce"},
+{word:"Bad",meaning:"坏的",khmer:"អាក្រក់",animationType:"shake"},
+{word:"Yes",meaning:"是的",khmer:"បាទ/ចាស",animationType:"bounce"},
+{word:"No",meaning:"不是",khmer:"ទេ",animationType:"shake"},
+{word:"Hi",meaning:"嗨",khmer:"សួស្តី",animationType:"wave"},
+{word:"Bye",meaning:"再见",khmer:"លាហើយ",animationType:"wave"},
+{word:"Mom",meaning:"妈妈",khmer:"ម្តាយ",animationType:"bounce"},
+{word:"Dad",meaning:"爸爸",khmer:"ឪពុក",animationType:"bounce"},
+{word:"Baby",meaning:"婴儿",khmer:"កូនង៉ែត",animationType:"bounce"},
+{word:"Boy",meaning:"男孩",khmer:"កូនប្រុស",animationType:"wave"},
+{word:"Girl",meaning:"女孩",khmer:"កូនស្រី",animationType:"sway"},
+{word:"Home",meaning:"家",khmer:"ផ្ទះ",animationType:"rise"},
+{word:"Door",meaning:"门",khmer:"ទ្វារ",animationType:"flip"},
+{word:"Room",meaning:"房间",khmer:"បន្ទប់",animationType:"rise"},
+{word:"Table",meaning:"桌子",khmer:"តុ",animationType:"rise"},
+{word:"Chair",meaning:"椅子",khmer:"កៅអី",animationType:"sway"},
+{word:"Sit",meaning:"坐",khmer:"អង្គុយ",animationType:"sway"},
+{word:"Stand",meaning:"站立",khmer:"ឈរ",animationType:"rise"},
+{word:"Run",meaning:"跑",khmer:"រត់",animationType:"shake"},
+{word:"Walk",meaning:"走",khmer:"ដើរ",animationType:"wave"},
+{word:"Jump",meaning:"跳",khmer:"លោត",animationType:"bounce"},
+{word:"Eat",meaning:"吃",khmer:"ញ៉ាំ",animationType:"wave"},
+{word:"Drink",meaning:"喝",khmer:"ផឹក",animationType:"wave"},
+{word:"Sleep",meaning:"睡觉",khmer:"គេង",animationType:"rise"},
+{word:"Play",meaning:"玩",khmer:"លេង",animationType:"bounce"},
+{word:"Sing",meaning:"唱歌",khmer:"ច្រៀង",animationType:"sway"},
+{word:"Draw",meaning:"画画",khmer:"គូរ",animationType:"sway"},
+{word:"Read",meaning:"读",khmer:"អាន",animationType:"flip"},
+{word:"Write",meaning:"写",khmer:"សរសេរ",animationType:"shake"},
+{word:"Love",meaning:"爱",khmer:"ស្រឡាញ់",animationType:"pulse"},
+{word:"Like",meaning:"喜欢",khmer:"ចូលចិត្ត",animationType:"bounce"}
+],
+grade2:[
+{word:"Morning",meaning:"早晨",khmer:"ពេលព្រឹក",animationType:"rise"},
+{word:"Noon",meaning:"中午",khmer:"ពេលថ្ងៃត្រង់",animationType:"pulse"},
+{word:"Evening",meaning:"傍晚",khmer:"ពេលល្ងាច",animationType:"rise"},
+{word:"Night",meaning:"夜晚",khmer:"ពេលយប់",animationType:"pulse"},
+{word:"Today",meaning:"今天",khmer:"ថ្ងៃនេះ",animationType:"spin"},
+{word:"Yesterday",meaning:"昨天",khmer:"ម្សិលមិញ",animationType:"flip"},
+{word:"Tomorrow",meaning:"明天",khmer:"ថ្ងៃស្អែក",animationType:"rise"},
+{word:"Monday",meaning:"星期一",khmer:"ថ្ងៃច័ន្ទ",animationType:"spin"},
+{word:"Tuesday",meaning:"星期二",khmer:"ថ្ងៃអង្គារ",animationType:"spin"},
+{word:"Wednesday",meaning:"星期三",khmer:"ថ្ងៃពុធ",animationType:"spin"},
+{word:"Thursday",meaning:"星期四",khmer:"ថ្ងៃព្រហស្បតិ៍",animationType:"spin"},
+{word:"Friday",meaning:"星期五",khmer:"ថ្ងៃសុក្រ",animationType:"spin"},
+{word:"Saturday",meaning:"星期六",khmer:"ថ្ងៃសៅរ៍",animationType:"bounce"},
+{word:"Sunday",meaning:"星期天",khmer:"ថ្ងៃអាទិត្យ",animationType:"pulse"},
+{word:"January",meaning:"一月",khmer:"ខែមករា",animationType:"rise"},
+{word:"Spring",meaning:"春天",khmer:"រដូវវសន្ត",animationType:"sway"},
+{word:"Summer",meaning:"夏天",khmer:"រដូវក្តៅ",animationType:"pulse"},
+{word:"Autumn",meaning:"秋天",khmer:"រដូវស្លឹកឈើជ្រុះ",animationType:"sway"},
+{word:"Winter",meaning:"冬天",khmer:"រដូវរងា",animationType:"rise"},
+{word:"Happy",meaning:"快乐的",khmer:"រីករាយ",animationType:"bounce"},
+{word:"Sad",meaning:"悲伤的",khmer:"សោកស្តាយ",animationType:"sway"},
+{word:"Angry",meaning:"生气的",khmer:"ខឹង",animationType:"shake"},
+{word:"Tired",meaning:"疲惫的",khmer:"នឿយហត់",animationType:"rise"},
+{word:"Hungry",meaning:"饥饿的",khmer:"ឃ្លាន",animationType:"sway"},
+{word:"Thirsty",meaning:"口渴的",khmer:"ស្រេកទឹក",animationType:"wave"},
+{word:"Pretty",meaning:"漂亮的",khmer:"ស្អាត",animationType:"pulse"},
+{word:"Ugly",meaning:"丑的",khmer:"អាក្រក់",animationType:"shake"},
+{word:"Fast",meaning:"快的",khmer:"លឿន",animationType:"shake"},
+{word:"Slow",meaning:"慢的",khmer:"យឺត",animationType:"wave"},
+{word:"Tall",meaning:"高的",khmer:"ខ្ពស់",animationType:"rise"},
+{word:"Short",meaning:"矮的",khmer:"ទាប",animationType:"bounce"},
+{word:"Long",meaning:"长的",khmer:"វែង",animationType:"wave"},
+{word:"Heavy",meaning:"重的",khmer:"ធ្ងន់",animationType:"bounce"},
+{word:"Light",meaning:"轻的",khmer:"ស្រាល",animationType:"rise"},
+{word:"School",meaning:"学校",khmer:"សាលារៀន",animationType:"flip"},
+{word:"Class",meaning:"班级",khmer:"ថ្នាក់",animationType:"flip"},
+{word:"Teacher",meaning:"老师",khmer:"គ្រូ",animationType:"sway"},
+{word:"Student",meaning:"学生",khmer:"សិស្ស",animationType:"bounce"},
+{word:"Friend",meaning:"朋友",khmer:"មិត្ត",animationType:"bounce"},
+{word:"Pencil",meaning:"铅笔",khmer:"ខ្មៅដៃ",animationType:"shake"},
+{word:"Ruler",meaning:"尺子",khmer:"បន្ទាត់",animationType:"sway"},
+{word:"Eraser",meaning:"橡皮擦",khmer:"ក橡皮",animationType:"shake"},
+{word:"Paper",meaning:"纸",khmer:"ក្រដាស",animationType:"wave"},
+{word:"Desk",meaning:"课桌",khmer:"តុសិក្សា",animationType:"rise"},
+{word:"Map",meaning:"地图",khmer:"ផែនទី",animationType:"wave"},
+{word:"Flag",meaning:"旗帜",khmer:"ទង់ជាតិ",animationType:"sway"},
+{word:"Clock",meaning:"时钟",khmer:"នាឡិកា",animationType:"spin"},
+{word:"Lamp",meaning:"灯",khmer:"ភ្លើង",animationType:"pulse"},
+{word:"Window",meaning:"窗户",khmer:"បង្អួច",animationType:"rise"},
+{word:"Kitchen",meaning:"厨房",khmer:"បន្ទប់ចម្អិន",animationType:"pulse"},
+{word:"Bedroom",meaning:"卧室",khmer:"បន្ទប់គេង",animationType:"rise"},
+{word:"Bathroom",meaning:"浴室",khmer:"បន្ទប់ទឹក",animationType:"wave"},
+{word:"Garden",meaning:"花园",khmer:"សួន",animationType:"rise"},
+{word:"Orange",meaning:"橙子",khmer:"ផ្លែក្រូច",animationType:"bounce"},
+{word:"Grape",meaning:"葡萄",khmer:"ផ្លែទំពាំងបាយជូរ",animationType:"bounce"},
+{word:"Banana",meaning:"香蕉",khmer:"ចេក",animationType:"sway"},
+{word:"Mango",meaning:"芒果",khmer:"ស្វាយ",animationType:"bounce"},
+{word:"Tomato",meaning:"西红柿",khmer:"ប៉េងប៉ោះ",animationType:"bounce"},
+{word:"Potato",meaning:"土豆",khmer:"ដំឡូង",animationType:"bounce"},
+{word:"Carrot",meaning:"胡萝卜",khmer:"ការ៉ុត",animationType:"sway"},
+{word:"Onion",meaning:"洋葱",khmer:"ខ្ទឹម",animationType:"sway"},
+{word:"Soup",meaning:"汤",khmer:"សម្ល",animationType:"wave"},
+{word:"Noodle",meaning:"面条",khmer:"មី",animationType:"wave"},
+{word:"Cookie",meaning:"饼干",khmer:"នំខូគី",animationType:"bounce"},
+{word:"Candy",meaning:"糖果",khmer:"បង្អែម",animationType:"bounce"},
+{word:"Chicken",meaning:"鸡肉",khmer:"សាច់មាន់",animationType:"sway"},
+{word:"Beef",meaning:"牛肉",khmer:"សាច់គោ",animationType:"shake"},
+{word:"Pork",meaning:"猪肉",khmer:"សាច់ជ្រូក",animationType:"sway"},
+{word:"Horse",meaning:"马",khmer:"សេះ",animationType:"wave"},
+{word:"Sheep",meaning:"羊",khmer:"ចៀម",animationType:"sway"},
+{word:"Rabbit",meaning:"兔子",khmer:"ទន្សាយ",animationType:"bounce"},
+{word:"Tiger",meaning:"老虎",khmer:"ខ្លា",animationType:"shake"},
+{word:"Lion",meaning:"狮子",khmer:"សិង្ហ",animationType:"shake"},
+{word:"Monkey",meaning:"猴子",khmer:"ស្វា",animationType:"bounce"},
+{word:"Elephant",meaning:"大象",khmer:"ដំរី",animationType:"sway"},
+{word:"Panda",meaning:"熊猫",khmer:"ខ្លាឃ្មុំប៉ាន់ដា",animationType:"sway"},
+{word:"Snake",meaning:"蛇",khmer:"ពស់",animationType:"wave"},
+{word:"Frog",meaning:"青蛙",khmer:"កង្កែប",animationType:"bounce"},
+{word:"Butterfly",meaning:"蝴蝶",khmer:"ហ្វូង",animationType:"wave"},
+{word:"Open",meaning:"打开",khmer:"បើក",animationType:"flip"},
+{word:"Close",meaning:"关闭",khmer:"បិទ",animationType:"flip"},
+{word:"Give",meaning:"给",khmer:"ផ្តល់",animationType:"wave"},
+{word:"Take",meaning:"拿",khmer:"យក",animationType:"wave"},
+{word:"Come",meaning:"来",khmer:"មក",animationType:"wave"},
+{word:"Go",meaning:"去",khmer:"ទៅ",animationType:"wave"},
+{word:"See",meaning:"看见",khmer:"មើល",animationType:"pulse"},
+{word:"Hear",meaning:"听到",khmer:"ឮ",animationType:"pulse"},
+{word:"Touch",meaning:"触摸",khmer:"ប៉ះ",animationType:"wave"},
+{word:"Smell",meaning:"闻",khmer:"ស្ទុះ",animationType:"sway"},
+{word:"Swim",meaning:"游泳",khmer:"ហែល",animationType:"wave"},
+{word:"Dance",meaning:"跳舞",khmer:"រាំ",animationType:"sway"},
+{word:"Cook",meaning:"做饭",khmer:"ចម្អិន",animationType:"pulse"},
+{word:"Clean",meaning:"清洁",khmer:"សម្អាត",animationType:"spin"},
+{word:"Wash",meaning:"洗",khmer:"លាង",animationType:"wave"},
+{word:"Fly",meaning:"飞",khmer:"ហើរ",animationType:"rise"},
+{word:"Climb",meaning:"爬",khmer:"ប្រមោះ",animationType:"rise"},
+{word:"Cry",meaning:"哭",khmer:"យំ",animationType:"wave"},
+{word:"Laugh",meaning:"笑",khmer:"សើច",animationType:"bounce"},
+{word:"Thank",meaning:"感谢",khmer:"អរគុណ",animationType:"bounce"},
+{word:"Help",meaning:"帮助",khmer:"ជួយ",animationType:"pulse"}
+],
+grade3:[
+{word:"Mountain",meaning:"山",khmer:"ភ្នំ",animationType:"rise"},
+{word:"River",meaning:"河流",khmer:"ទន្លេ",animationType:"wave"},
+{word:"Lake",meaning:"湖泊",khmer:"បឹង",animationType:"wave"},
+{word:"Sea",meaning:"大海",khmer:"សមុទ្រ",animationType:"wave"},
+{word:"Beach",meaning:"海滩",khmer:"ឆ្នេរ",animationType:"wave"},
+{word:"Island",meaning:"岛屿",khmer:"កោះ",animationType:"rise"},
+{word:"Valley",meaning:"山谷",khmer:"ជ្រលង",animationType:"sway"},
+{word:"Desert",meaning:"沙漠",khmer:"វាលខ្សាច់",animationType:"sway"},
+{word:"Forest",meaning:"森林",khmer:"ព្រៃ",animationType:"rise"},
+{word:"Field",meaning:"田野",khmer:"វាល",animationType:"sway"},
+{word:"Farm",meaning:"农场",khmer:"ចំការ",animationType:"sway"},
+{word:"Village",meaning:"村庄",khmer:"ភូមិ",animationType:"rise"},
+{word:"City",meaning:"城市",khmer:"ក្រុង",animationType:"rise"},
+{word:"Town",meaning:"小镇",khmer:"ក្រុងតូច",animationType:"rise"},
+{word:"Street",meaning:"街道",khmer:"ផ្លូវ",animationType:"wave"},
+{word:"Bridge",meaning:"桥梁",khmer:"ស្ពាន",animationType:"rise"},
+{word:"Park",meaning:"公园",khmer:"សួនច្បារ",animationType:"rise"},
+{word:"Zoo",meaning:"动物园",khmer:"សួនសត្វ",animationType:"bounce"},
+{word:"Market",meaning:"市场",khmer:"ផ្សារ",animationType:"shake"},
+{word:"Store",meaning:"商店",khmer:"ហាង",animationType:"rise"},
+{word:"Hospital",meaning:"医院",khmer:"មន្ទីរពេទ្យ",animationType:"pulse"},
+{word:"Police",meaning:"警察",khmer:"ប៉ូលីស",animationType:"shake"},
+{word:"Station",meaning:"车站",khmer:"ស្ថានី",animationType:"rise"},
+{word:"Airport",meaning:"机场",khmer:"អាកាសយានដ្ឋាន",animationType:"rise"},
+{word:"Plane",meaning:"飞机",khmer:"យន្តហោះ",animationType:"rise"},
+{word:"Train",meaning:"火车",khmer:"រថភ្លើង",animationType:"wave"},
+{word:"Ship",meaning:"船",khmer:"នាវា",animationType:"wave"},
+{word:"Bike",meaning:"自行车",khmer:"កង់",animationType:"spin"},
+{word:"Taxi",meaning:"出租车",khmer:"តាក់ស៊ី",animationType:"wave"},
+{word:"Robot",meaning:"机器人",khmer:"រូបយន្ត",animationType:"flip"},
+{word:"Body",meaning:"身体",khmer:"រាងកាយ",animationType:"pulse"},
+{word:"Face",meaning:"脸",khmer:"មុខ",animationType:"pulse"},
+{word:"Hair",meaning:"头发",khmer:"សក់",animationType:"sway"},
+{word:"Tooth",meaning:"牙齿",khmer:"ធ្មេញ",animationType:"shake"},
+{word:"Neck",meaning:"脖子",khmer:"ក",animationType:"sway"},
+{word:"Shoulder",meaning:"肩膀",khmer:"ស្មា",animationType:"sway"},
+{word:"Chest",meaning:"胸部",khmer:"ទ្រូង",animationType:"pulse"},
+{word:"Back",meaning:"后背",khmer:"ខ្នង",animationType:"rise"},
+{word:"Finger",meaning:"手指",khmer:"ម្រាមដៃ",animationType:"wave"},
+{word:"Thumb",meaning:"拇指",khmer:"ម្រាមដៃមេ",animationType:"bounce"},
+{word:"Knee",meaning:"膝盖",khmer:"ជង្គង់",animationType:"bounce"},
+{word:"Elbow",meaning:"肘部",khmer:"កែងដៃ",animationType:"sway"},
+{word:"Stomach",meaning:"胃",khmer:"ក្រពះ",animationType:"wave"},
+{word:"Heart",meaning:"心脏",khmer:"បេះដូង",animationType:"pulse"},
+{word:"Lung",meaning:"肺",khmer:"សួត",animationType:"wave"},
+{word:"Blood",meaning:"血液",khmer:"ឈាម",animationType:"pulse"},
+{word:"Bone",meaning:"骨骼",khmer:"ឆ្អឹង",animationType:"shake"},
+{word:"Skin",meaning:"皮肤",khmer:"ស្បែក",animationType:"pulse"},
+{word:"Brain",meaning:"大脑",khmer:"ខួរក្បាល",animationType:"spin"},
+{word:"Doctor",meaning:"医生",khmer:"គ្រូពេទ្យ",animationType:"pulse"},
+{word:"Breakfast",meaning:"早餐",khmer:"អាហារពេលព្រឹក",animationType:"rise"},
+{word:"Lunch",meaning:"午餐",khmer:"អាហារថ្ងៃត្រង់",animationType:"pulse"},
+{word:"Dinner",meaning:"晚餐",khmer:"អាហារពេលល្ងាច",animationType:"rise"},
+{word:"Menu",meaning:"菜单",khmer:"មុខម្ហូប",animationType:"flip"},
+{word:"Fork",meaning:"叉子",khmer:"សម",animationType:"shake"},
+{word:"Knife",meaning:"刀",khmer:"កាំបិត",animationType:"shake"},
+{word:"Spoon",meaning:"勺子",khmer:"ស្លាបព្រា",animationType:"sway"},
+{word:"Bowl",meaning:"碗",khmer:"ចាន",animationType:"sway"},
+{word:"Plate",meaning:"盘子",khmer:"ចានបំប៉ន",animationType:"spin"},
+{word:"Bottle",meaning:"瓶子",khmer:"ដប",animationType:"sway"},
+{word:"Corn",meaning:"玉米",khmer:"ពោត",animationType:"sway"},
+{word:"Bean",meaning:"豆子",khmer:"សណ្តែក",animationType:"bounce"},
+{word:"Cabbage",meaning:"卷心菜",khmer:"ស្ព",animationType:"sway"},
+{word:"Pumpkin",meaning:"南瓜",khmer:"ល្ពៅ",animationType:"bounce"},
+{word:"Strawberry",meaning:"草莓",khmer:"ផ្លែស្ត្របឺរី",animationType:"bounce"},
+{word:"Cherry",meaning:"樱桃",khmer:"ផ្លែឆឺរី",animationType:"bounce"},
+{word:"Watermelon",meaning:"西瓜",khmer:"ត្រប់",animationType:"bounce"},
+{word:"Lemon",meaning:"柠檬",khmer:"ក្រូចឆ្មា",animationType:"bounce"},
+{word:"Peach",meaning:"桃子",khmer:"ផ្លែព្រូន",animationType:"bounce"},
+{word:"Deer",meaning:"鹿",khmer:"ក្តាន់",animationType:"sway"},
+{word:"Wolf",meaning:"狼",khmer:"ចចក",animationType:"shake"},
+{word:"Bear",meaning:"熊",khmer:"ខ្លាឃ្មុំ",animationType:"sway"},
+{word:"Fox",meaning:"狐狸",khmer:"ក្តាន់ភ្នំ",animationType:"wave"},
+{word:"Squirrel",meaning:"松鼠",khmer:"កំប្រុក",animationType:"bounce"},
+{word:"Parrot",meaning:"鹦鹉",khmer:"សត្វស្ករ",animationType:"sway"},
+{word:"Penguin",meaning:"企鹅",khmer:"សត្វភឹងញ៉ិន",animationType:"sway"},
+{word:"Crocodile",meaning:"鳄鱼",khmer:"ក្រពើ",animationType:"wave"},
+{word:"Dolphin",meaning:"海豚",khmer:"ត្រីដូហ្វីន",animationType:"wave"},
+{word:"Whale",meaning:"鲸鱼",khmer:"ត្រីបាឡែន",animationType:"wave"},
+{word:"Rose",meaning:"玫瑰",khmer:"ផ្កាកុលាប",animationType:"sway"},
+{word:"Sunflower",meaning:"向日葵",khmer:"ផ្កាព្រះអាទិត្យ",animationType:"spin"},
+{word:"Leaf",meaning:"叶子",khmer:"ស្លឹក",animationType:"sway"},
+{word:"Root",meaning:"根",khmer:"គល់",animationType:"rise"},
+{word:"Seed",meaning:"种子",khmer:"គ្រាប់",animationType:"bounce"},
+{word:"Fruit",meaning:"水果",khmer:"ផ្លែឈើ",animationType:"bounce"},
+{word:"Branch",meaning:"树枝",khmer:"មែក",animationType:"sway"},
+{word:"Sunny",meaning:"晴天的",khmer:"ថ្ងៃ​ចែង",animationType:"pulse"},
+{word:"Cloudy",meaning:"多云的",khmer:"ពពកច្រើន",animationType:"rise"},
+{word:"Rainy",meaning:"下雨的",khmer:"ភ្លៀង",animationType:"wave"},
+{word:"Snowy",meaning:"下雪的",khmer:"មានព្រិល",animationType:"rise"},
+{word:"Windy",meaning:"有风的",khmer:"មានខ្យល់",animationType:"sway"},
+{word:"Foggy",meaning:"有雾的",khmer:"មានអ័ព្ទ",animationType:"rise"},
+{word:"Stormy",meaning:"暴风雨的",khmer:"ព្យុះ",animationType:"shake"},
+{word:"Warm",meaning:"温暖的",khmer:"ក្តៅស្រួល",animationType:"pulse"},
+{word:"Cool",meaning:"凉爽的",khmer:"ត្រជាក់",animationType:"rise"},
+{word:"Wet",meaning:"湿的",khmer:"សើម",animationType:"wave"},
+{word:"Dry",meaning:"干的",khmer:"ស្ងួត",animationType:"pulse"},
+{word:"Bright",meaning:"明亮的",khmer:"ភ្លឺ",animationType:"pulse"}
+],
+grade4:[
+{word:"Country",meaning:"国家",khmer:"ប្រទេស",animationType:"rise"},
+{word:"Capital",meaning:"首都",khmer:"រាជធានី",animationType:"spin"},
+{word:"Flag",meaning:"国旗",khmer:"ទង់ជាតិ",animationType:"sway"},
+{word:"Citizen",meaning:"公民",khmer:"ពលរដ្ឋ",animationType:"rise"},
+{word:"Government",meaning:"政府",khmer:"រដ្ឋាភិបាល",animationType:"rise"},
+{word:"Law",meaning:"法律",khmer:"ច្បាប់",animationType:"flip"},
+{word:"Rule",meaning:"规则",khmer:"វិន័យ",animationType:"flip"},
+{word:"Right",meaning:"权利",khmer:"សិទ្ធិ",animationType:"pulse"},
+{word:"Duty",meaning:"义务",khmer:"កាតព្វកិច្ច",animationType:"rise"},
+{word:"Vote",meaning:"投票",khmer:"បោះឆ្នោត",animationType:"bounce"},
+{word:"Science",meaning:"科学",khmer:"វិទ្យាសាស្ត្រ",animationType:"pulse"},
+{word:"Math",meaning:"数学",khmer:"គណិតវិទ្យា",animationType:"spin"},
+{word:"English",meaning:"英语",khmer:"ភាសាអង់គ្លេស",animationType:"wave"},
+{word:"Art",meaning:"艺术",khmer:"សិល្បៈ",animationType:"pulse"},
+{word:"Music",meaning:"音乐",khmer:"តន្ត្រី",animationType:"sway"},
+{word:"Sport",meaning:"体育",khmer:"កីឡា",animationType:"bounce"},
+{word:"Gym",meaning:"体育馆",khmer:"កន្លែងហាត់ប្រាណ",animationType:"bounce"},
+{word:"Library",meaning:"图书馆",khmer:"បណ្ណាល័យ",animationType:"flip"},
+{word:"Lab",meaning:"实验室",khmer:"មន្ទីរពិសោធន៍",animationType:"pulse"},
+{word:"Exam",meaning:"考试",khmer:"ប្រឡង",animationType:"shake"},
+{word:"Result",meaning:"结果",khmer:"លទ្ធផល",animationType:"rise"},
+{word:"Grade",meaning:"成绩",khmer:"ថ្នាក់",animationType:"rise"},
+{word:"Award",meaning:"奖励",khmer:"រង្វាន់",animationType:"bounce"},
+{word:"Medal",meaning:"奖牌",khmer:"មេដាយ",animationType:"spin"},
+{word:"Prize",meaning:"奖品",khmer:"រង្វាន់",animationType:"bounce"},
+{word:"Energy",meaning:"能量",khmer:"ថាមពល",animationType:"shake"},
+{word:"Force",meaning:"力",khmer:"កម្លាំង",animationType:"shake"},
+{word:"Light",meaning:"光",khmer:"ពន្លឺ",animationType:"pulse"},
+{word:"Sound",meaning:"声音",khmer:"សំឡេង",animationType:"wave"},
+{word:"Heat",meaning:"热量",khmer:"កំដៅ",animationType:"pulse"},
+{word:"Magnet",meaning:"磁铁",khmer:"ដែកទាញ",animationType:"spin"},
+{word:"Gravity",meaning:"重力",khmer:"ទំនាញផែនដី",animationType:"bounce"},
+{word:"Oxygen",meaning:"氧气",khmer:"អុកស៊ីសែន",animationType:"rise"},
+{word:"Carbon",meaning:"碳",khmer:"កាបូន",animationType:"spin"},
+{word:"Metal",meaning:"金属",khmer:"លោហៈ",animationType:"shake"},
+{word:"Wood",meaning:"木头",khmer:"ឈើ",animationType:"sway"},
+{word:"Plastic",meaning:"塑料",khmer:"ប្លាស្ទិក",animationType:"flip"},
+{word:"Glass",meaning:"玻璃",khmer:"កញ្ចក់",animationType:"pulse"},
+{word:"Paper",meaning:"纸",khmer:"ក្រដាស",animationType:"wave"},
+{word:"Planet",meaning:"星球",khmer:"ភពផែនដី",animationType:"spin"},
+{word:"Earth",meaning:"地球",khmer:"ផែនដី",animationType:"spin"},
+{word:"Mars",meaning:"火星",khmer:"ភពអង្គារ",animationType:"spin"},
+{word:"Space",meaning:"太空",khmer:"អវកាស",animationType:"rise"},
+{word:"Rocket",meaning:"火箭",khmer:"រ៉ុក្កែត",animationType:"rise"},
+{word:"Satellite",meaning:"卫星",khmer:"ផ្កាយរណប",animationType:"spin"},
+{word:"Telescope",meaning:"望远镜",khmer:"កែវយឹត",animationType:"pulse"},
+{word:"Astronaut",meaning:"宇航员",khmer:"អវកាសយាន្ត្រិក",animationType:"rise"},
+{word:"Computer",meaning:"电脑",khmer:"កុំព្យូទ័រ",animationType:"flip"},
+{word:"Phone",meaning:"电话",khmer:"ទូរស័ព្ទ",animationType:"shake"},
+{word:"Camera",meaning:"相机",khmer:"កាំមេរ៉ា",animationType:"pulse"},
+{word:"Television",meaning:"电视",khmer:"កុំព្យូទ័រ",animationType:"flip"},
+{word:"Radio",meaning:"收音机",khmer:"វិទ្យុ",animationType:"wave"},
+{word:"Internet",meaning:"互联网",khmer:"អ៊ីនធឺណិត",animationType:"spin"},
+{word:"Email",meaning:"电子邮件",khmer:"អ៊ីម៉ែល",animationType:"wave"},
+{word:"Message",meaning:"信息",khmer:"សារ",animationType:"wave"},
+{word:"Program",meaning:"程序",khmer:"កម្មវិធី",animationType:"flip"},
+{word:"Museum",meaning:"博物馆",khmer:"សារមន្ទីរ",animationType:"rise"},
+{word:"History",meaning:"历史",khmer:"ប្រវត្តិសាស្ត្រ",animationType:"flip"},
+{word:"Culture",meaning:"文化",khmer:"វប្បធម៌",animationType:"rise"},
+{word:"Custom",meaning:"习俗",khmer:"ទំនៀមទំលាប់",animationType:"sway"},
+{word:"Festival",meaning:"节日",khmer:"ពិធីបុណ្យ",animationType:"bounce"},
+{word:"Language",meaning:"语言",khmer:"ភាសា",animationType:"wave"},
+{word:"Poem",meaning:"诗歌",khmer:"កំណាព្យ",animationType:"sway"},
+{word:"Story",meaning:"故事",khmer:"រឿង",animationType:"flip"},
+{word:"Novel",meaning:"小说",khmer:"ប្រលោមលោក",animationType:"flip"},
+{word:"Drama",meaning:"戏剧",khmer:"រឿងល្ខោន",animationType:"sway"},
+{word:"Dance",meaning:"舞蹈",khmer:"របាំ",animationType:"sway"},
+{word:"Painting",meaning:"绘画",khmer:"គំនូរ",animationType:"pulse"},
+{word:"Sculpture",meaning:"雕塑",khmer:"ចម្លាក់",animationType:"rise"},
+{word:"Concert",meaning:"音乐会",khmer:"ព្រឹត្តិការណ៍តន្ត្រី",animationType:"sway"},
+{word:"Theater",meaning:"剧院",khmer:"រោងល្ខោន",animationType:"rise"},
+{word:"Traffic",meaning:"交通",khmer:"ចរាចរណ៍",animationType:"wave"},
+{word:"Subway",meaning:"地铁",khmer:"រថក្រោលដី",animationType:"wave"},
+{word:"Highway",meaning:"高速公路",khmer:"មហាវិថី",animationType:"wave"},
+{word:"Tunnel",meaning:"隧道",khmer:"ផ្លូវក្នុងដី",animationType:"wave"},
+{word:"Harbour",meaning:"港口",khmer:"កំពង់ផែ",animationType:"wave"},
+{word:"Protect",meaning:"保护",khmer:"ការពារ",animationType:"pulse"},
+{word:"Recycle",meaning:"回收",khmer:"កែច្នៃឡើងវិញ",animationType:"spin"},
+{word:"Pollution",meaning:"污染",khmer:"ការបំពុល",animationType:"sway"},
+{word:"Nature",meaning:"自然",khmer:"ធម្មជាតិ",animationType:"sway"},
+{word:"Climate",meaning:"气候",khmer:"អាកាសធាតុ",animationType:"rise"},
+{word:"Earthquake",meaning:"地震",khmer:"ការញ័រដី",animationType:"shake"},
+{word:"Flood",meaning:"洪水",khmer:"គ្រោះទឹកជំនន់",animationType:"wave"},
+{word:"Volcano",meaning:"火山",khmer:"ភ្នំភ្លើង",animationType:"pulse"},
+{word:"Tornado",meaning:"龙卷风",khmer:"ព្យុះ",animationType:"spin"},
+{word:"Drought",meaning:"干旱",khmer:"គ្រោះរាំងស្ងួត",animationType:"sway"},
+{word:"Resource",meaning:"资源",khmer:"ធនធាន",animationType:"rise"},
+{word:"Coal",meaning:"煤",khmer:"ធ្យូង",animationType:"flip"},
+{word:"Oil",meaning:"石油",khmer:"ប្រេង",animationType:"wave"},
+{word:"Solar",meaning:"太阳能的",khmer:"ថាមពលព្រះអាទិត្យ",animationType:"pulse"},
+{word:"Nuclear",meaning:"核能的",khmer:"ថាមពលនុយក្លេអ៊ែរ",animationType:"pulse"},
+{word:"Electric",meaning:"电的",khmer:"អគ្គិសនី",animationType:"shake"},
+{word:"Power",meaning:"能源",khmer:"ថាមពល",animationType:"pulse"}
+],
+grade5:[
+{word:"Adventure",meaning:"冒险",khmer:"ការ冒险",animationType:"wave"},
+{word:"Challenge",meaning:"挑战",khmer:"ការប្រកួត",animationType:"shake"},
+{word:"Discovery",meaning:"发现",khmer:"ការស្វែងរក",animationType:"pulse"},
+{word:"Explore",meaning:"探索",khmer:"ស្រាវជ្រាវ",animationType:"wave"},
+{word:"Freedom",meaning:"自由",khmer:"សេរីភាព",animationType:"rise"},
+{word:"Imagine",meaning:"想象",khmer:"ស្រមៃ",animationType:"pulse"},
+{word:"Improve",meaning:"提高",khmer:"កែលម្អ",animationType:"rise"},
+{word:"Journey",meaning:"旅程",khmer:"ដំណើរ",animationType:"wave"},
+{word:"Knowledge",meaning:"知识",khmer:"ចំណេះដឹង",animationType:"flip"},
+{word:"Leader",meaning:"领袖",khmer:"មេដឹកនាំ",animationType:"rise"},
+{word:"Opinion",meaning:"意见",khmer:"មតិ",animationType:"sway"},
+{word:"Practice",meaning:"练习",khmer:"ហាត់",animationType:"bounce"},
+{word:"Question",meaning:"问题",khmer:"សំណួរ",animationType:"shake"},
+{word:"Research",meaning:"研究",khmer:"ការស្រាវជ្រាវ",animationType:"flip"},
+{word:"Society",meaning:"社会",khmer:"សង្គម",animationType:"rise"},
+{word:"Technology",meaning:"技术",khmer:"បច្ចេកវិទ្យា",animationType:"spin"},
+{word:"Universe",meaning:"宇宙",khmer:"សកលលោក",animationType:"spin"},
+{word:"Volunteer",meaning:"志愿者",khmer:"អ្នកស្ម័គ្រចិត្ត",animationType:"bounce"},
+{word:"Wisdom",meaning:"智慧",khmer:"ប្រាជ្ញា",animationType:"rise"},
+{word:"Achieve",meaning:"实现",khmer:"សម្រេចបាន",animationType:"rise"},
+{word:"Analyze",meaning:"分析",khmer:"វិភាគ",animationType:"spin"},
+{word:"Argue",meaning:"争论",khmer:"ជជែក",animationType:"shake"},
+{word:"Believe",meaning:"相信",khmer:"ជឿ",animationType:"pulse"},
+{word:"Compare",meaning:"比较",khmer:"ប្រៀបធៀប",animationType:"flip"},
+{word:"Create",meaning:"创造",khmer:"បង្កើត",animationType:"pulse"},
+{word:"Decide",meaning:"决定",khmer:"សម្រេចចិត្ត",animationType:"bounce"},
+{word:"Develop",meaning:"发展",khmer:"អភិវឌ្ឍ",animationType:"rise"},
+{word:"Discuss",meaning:"讨论",khmer:"ពិភាក្សា",animationType:"wave"},
+{word:"Evaluate",meaning:"评估",khmer:"វាយតម្លៃ",animationType:"spin"},
+{word:"Explain",meaning:"解释",khmer:"ពន្យល់",animationType:"wave"},
+{word:"Identify",meaning:"识别",khmer:"កំណត់អត្តសញ្ញាណ",animationType:"pulse"},
+{word:"Include",meaning:"包含",khmer:"រួម",animationType:"rise"},
+{word:"Increase",meaning:"增加",khmer:"កើនឡើង",animationType:"rise"},
+{word:"Influence",meaning:"影响",khmer:"ឥទ្ធិពល",animationType:"wave"},
+{word:"Observe",meaning:"观察",khmer:"សង្កេត",animationType:"pulse"},
+{word:"Organize",meaning:"组织",khmer:"រៀបចំ",animationType:"spin"},
+{word:"Present",meaning:"呈现",khmer:"បង្ហាញ",animationType:"flip"},
+{word:"Produce",meaning:"生产",khmer:"ផលិត",animationType:"pulse"},
+{word:"Provide",meaning:"提供",khmer:"ផ្តល់",animationType:"wave"},
+{word:"Solve",meaning:"解决",khmer:"ដោះស្រាយ",animationType:"bounce"},
+{word:"Ability",meaning:"能力",khmer:"សមត្ថភាព",animationType:"pulse"},
+{word:"Advantage",meaning:"优点",khmer:"គុណសម្បត្តិ",animationType:"rise"},
+{word:"Agreement",meaning:"协议",khmer:"កិច្ចព្រមព្រៀង",animationType:"bounce"},
+{word:"Attitude",meaning:"态度",khmer:"អាកប្បកិរិយា",animationType:"sway"},
+{word:"Behaviour",meaning:"行为",khmer:"ឥរិយាបថ",animationType:"wave"},
+{word:"Benefit",meaning:"益处",khmer:"អត្ថប្រយោជន៍",animationType:"bounce"},
+{word:"Career",meaning:"职业",khmer:"អាជីព",animationType:"rise"},
+{word:"Character",meaning:"性格",khmer:"ចរិត",animationType:"pulse"},
+{word:"Choice",meaning:"选择",khmer:"ជម្រើស",animationType:"bounce"},
+{word:"Concept",meaning:"概念",khmer:"គំនិត",animationType:"flip"},
+{word:"Conflict",meaning:"冲突",khmer:"ជំលោះ",animationType:"shake"},
+{word:"Consequence",meaning:"后果",khmer:"លទ្ធផល",animationType:"sway"},
+{word:"Contribution",meaning:"贡献",khmer:"ការចូលរួម",animationType:"bounce"},
+{word:"Curiosity",meaning:"好奇心",khmer:"ចំណង់ចំណូលចិត្ត",animationType:"pulse"},
+{word:"Danger",meaning:"危险",khmer:"គ្រោះថ្នាក់",animationType:"shake"},
+{word:"Decision",meaning:"决定",khmer:"ការសម្រេចចិត្ត",animationType:"bounce"},
+{word:"Difference",meaning:"差异",khmer:"ភាពខុសគ្នា",animationType:"flip"},
+{word:"Difficulty",meaning:"困难",khmer:"ការលំបាក",animationType:"shake"},
+{word:"Effort",meaning:"努力",khmer:"ការខំប្រឹង",animationType:"shake"},
+{word:"Environment",meaning:"环境",khmer:"បរិស្ថាន",animationType:"sway"},
+{word:"Equality",meaning:"平等",khmer:"សមភាព",animationType:"rise"},
+{word:"Evidence",meaning:"证据",khmer:"ភស្តុតាង",animationType:"pulse"},
+{word:"Experience",meaning:"经验",khmer:"បទពិសោធ",animationType:"rise"},
+{word:"Failure",meaning:"失败",khmer:"ការបរាជ័យ",animationType:"sway"},
+{word:"Fairness",meaning:"公平",khmer:"ភាពយុត្តិធម៌",animationType:"rise"},
+{word:"Goal",meaning:"目标",khmer:"គោលដៅ",animationType:"rise"},
+{word:"Habit",meaning:"习惯",khmer:"ទំលាប់",animationType:"flip"},
+{word:"Importance",meaning:"重要性",khmer:"សារសំខាន់",animationType:"pulse"},
+{word:"Independence",meaning:"独立",khmer:"ឯករាជ្យ",animationType:"rise"},
+{word:"Information",meaning:"信息",khmer:"ព័ត៌មាន",animationType:"wave"},
+{word:"Inspiration",meaning:"灵感",khmer:"ការបំផុស",animationType:"pulse"},
+{word:"Interest",meaning:"兴趣",khmer:"ចំណាប់អារម្មណ៍",animationType:"bounce"},
+{word:"Justice",meaning:"正义",khmer:"យុត្តិធម៌",animationType:"rise"},
+{word:"Memory",meaning:"记忆",khmer:"ការចងចាំ",animationType:"flip"},
+{word:"Method",meaning:"方法",khmer:"វិធីសាស្ត្រ",animationType:"flip"},
+{word:"Mistake",meaning:"错误",khmer:"កំហុស",animationType:"shake"},
+{word:"Network",meaning:"网络",khmer:"បណ្តាញ",animationType:"spin"},
+{word:"Obstacle",meaning:"障碍",khmer:"ឧបសគ្គ",animationType:"shake"},
+{word:"Opportunity",meaning:"机会",khmer:"ឱកាស",animationType:"bounce"},
+{word:"Pattern",meaning:"规律",khmer:"លំនាំ",animationType:"spin"},
+{word:"Permission",meaning:"许可",khmer:"ការអនុញ្ញាត",animationType:"rise"},
+{word:"Population",meaning:"人口",khmer:"ប្រជាជន",animationType:"bounce"},
+{word:"Problem",meaning:"问题",khmer:"បញ្ហា",animationType:"shake"},
+{word:"Process",meaning:"过程",khmer:"ដំណើរការ",animationType:"wave"},
+{word:"Progress",meaning:"进步",khmer:"ភាពរីកចម្រើន",animationType:"rise"},
+{word:"Purpose",meaning:"目的",khmer:"គោលបំណង",animationType:"rise"},
+{word:"Reason",meaning:"原因",khmer:"មូលហេតុ",animationType:"flip"},
+{word:"Relationship",meaning:"关系",khmer:"ទំនាក់ទំនង",animationType:"wave"},
+{word:"Respect",meaning:"尊重",khmer:"ការគោរព",animationType:"bounce"},
+{word:"Responsibility",meaning:"责任",khmer:"ទំនួលខុសត្រូវ",animationType:"rise"},
+{word:"Risk",meaning:"风险",khmer:"ហានិភ័យ",animationType:"shake"},
+{word:"Solution",meaning:"解决方案",khmer:"ដំណោះស្រាយ",animationType:"pulse"},
+{word:"Standard",meaning:"标准",khmer:"ស្តង់ដារ",animationType:"rise"},
+{word:"Strategy",meaning:"策略",khmer:"យុទ្ធសាស្ត្រ",animationType:"flip"},
+{word:"Strength",meaning:"力量",khmer:"កម្លាំង",animationType:"pulse"},
+{word:"Success",meaning:"成功",khmer:"ជោគជ័យ",animationType:"bounce"},
+{word:"Support",meaning:"支持",khmer:"ការគាំទ្រ",animationType:"bounce"},
+{word:"Theory",meaning:"理论",khmer:"ទ្រឹស្តី",animationType:"flip"}
+],
+grade6:[
+{word:"Achievement",meaning:"成就",khmer:"សមិទ្ធផល",animationType:"bounce"},
+{word:"Atmosphere",meaning:"大气层",khmer:"បរិយាកាស",animationType:"rise"},
+{word:"Biodiversity",meaning:"生物多样性",khmer:"ជីវចម្រុះ",animationType:"sway"},
+{word:"Civilization",meaning:"文明",khmer:"អរិយធម៌",animationType:"rise"},
+{word:"Communicate",meaning:"交流",khmer:"ទំនាក់ទំនង",animationType:"wave"},
+{word:"Democracy",meaning:"民主",khmer:"លទ្ធិប្រជាធិបតេយ្យ",animationType:"flip"},
+{word:"Evolution",meaning:"进化",khmer:"វិវត្តន៍",animationType:"spin"},
+{word:"Generation",meaning:"一代人",khmer:"ជំនាន់",animationType:"rise"},
+{word:"Innovation",meaning:"创新",khmer:"នវានុវត្ត",animationType:"pulse"},
+{word:"Migration",meaning:"迁移",khmer:"ការផ្លាស់ទី",animationType:"wave"},
+{word:"Revolution",meaning:"革命",khmer:"បដិវត្ត",animationType:"spin"},
+{word:"Sustainable",meaning:"可持续的",khmer:"ចីរភាព",animationType:"rise"},
+{word:"Tradition",meaning:"传统",khmer:"ប្រពៃណី",animationType:"flip"},
+{word:"Vocabulary",meaning:"词汇",khmer:"វាក្យសព្ទ",animationType:"flip"},
+{word:"Wilderness",meaning:"荒野",khmer:"ព្រៃព្រ",animationType:"wave"},
+{word:"Abolish",meaning:"废除",khmer:"លុបបំបាត់",animationType:"shake"},
+{word:"Abstract",meaning:"抽象的",khmer:"អរូបី",animationType:"pulse"},
+{word:"Accumulate",meaning:"积累",khmer:"ប្រមូល",animationType:"rise"},
+{word:"Accurate",meaning:"准确的",khmer:"ត្រឹមត្រូវ",animationType:"pulse"},
+{word:"Acknowledge",meaning:"承认",khmer:"ទទួលស្គាល់",animationType:"bounce"},
+{word:"Adaptation",meaning:"适应",khmer:"ការសម្របខ្លួន",animationType:"sway"},
+{word:"Administration",meaning:"管理",khmer:"រដ្ឋបាល",animationType:"spin"},
+{word:"Adolescent",meaning:"青少年",khmer:"អ្នកក្មេង",animationType:"bounce"},
+{word:"Advocate",meaning:"倡导",khmer:"តស៊ូ",animationType:"rise"},
+{word:"Aesthetic",meaning:"美学的",khmer:"សោភ័ណ",animationType:"pulse"},
+{word:"Allocation",meaning:"分配",khmer:"ការបែងចែក",animationType:"rise"},
+{word:"Alternative",meaning:"替代物",khmer:"ជម្រើស",animationType:"flip"},
+{word:"Ambiguous",meaning:"模糊的",khmer:"មិនច្បាស់",animationType:"sway"},
+{word:"Amendment",meaning:"修正案",khmer:"វិសោធនកម្ម",animationType:"flip"},
+{word:"Analysis",meaning:"分析",khmer:"ការវិភាគ",animationType:"spin"},
+{word:"Anticipate",meaning:"预期",khmer:"រំពឹងទុក",animationType:"rise"},
+{word:"Application",meaning:"应用",khmer:"ការអនុវត្ត",animationType:"flip"},
+{word:"Appreciation",meaning:"欣赏",khmer:"ការដឹងគុណ",animationType:"pulse"},
+{word:"Archaeology",meaning:"考古学",khmer:"បុរាណវិទ្យា",animationType:"flip"},
+{word:"Architecture",meaning:"建筑学",khmer:"ស្ថាបត្យកម្ម",animationType:"rise"},
+{word:"Artificial",meaning:"人工的",khmer:"សិប្បនិម្មិត",animationType:"flip"},
+{word:"Assessment",meaning:"评估",khmer:"ការវាស់វែង",animationType:"spin"},
+{word:"Assumption",meaning:"假设",khmer:"ការសន្មត",animationType:"sway"},
+{word:"Authentic",meaning:"真实的",khmer:"ពិតប្រាកដ",animationType:"pulse"},
+{word:"Automation",meaning:"自动化",khmer:"ស្វ័យប្រវត្តិ",animationType:"spin"},
+{word:"Autonomy",meaning:"自治",khmer:"ឯករាជ្យភាព",animationType:"rise"},
+{word:"Biological",meaning:"生物的",khmer:"ជីវវិទ្យា",animationType:"sway"},
+{word:"Capacity",meaning:"容量",khmer:"សមត្ថភាព",animationType:"rise"},
+{word:"Catastrophe",meaning:"灾难",khmer:"គ្រោះមហន្តរាយ",animationType:"shake"},
+{word:"Classification",meaning:"分类",khmer:"ការចាត់ថ្នាក់",animationType:"spin"},
+{word:"Collaboration",meaning:"合作",khmer:"ការសហការ",animationType:"wave"},
+{word:"Commitment",meaning:"承诺",khmer:"ការប្តេជ្ញា",animationType:"bounce"},
+{word:"Community",meaning:"社区",khmer:"សហគមន៍",animationType:"rise"},
+{word:"Competition",meaning:"竞争",khmer:"ការប្រកួត",animationType:"shake"},
+{word:"Complexity",meaning:"复杂性",khmer:"ភាពស្មុគ",animationType:"spin"},
+{word:"Compromise",meaning:"妥协",khmer:"ការសម្រុះ",animationType:"sway"},
+{word:"Concentration",meaning:"集中",khmer:"ការផ្តោត",animationType:"pulse"},
+{word:"Consensus",meaning:"共识",khmer:"ការព្រមព្រៀង",animationType:"bounce"},
+{word:"Conservation",meaning:"保护",khmer:"ការអភិរក្ស",animationType:"rise"},
+{word:"Constitution",meaning:"宪法",khmer:"រដ្ឋធម្មនុញ្ញ",animationType:"flip"},
+{word:"Consumption",meaning:"消费",khmer:"ការប្រើប្រាស់",animationType:"wave"},
+{word:"Contradiction",meaning:"矛盾",khmer:"ការផ្ទុយ",animationType:"shake"},
+{word:"Convention",meaning:"惯例",khmer:"អនុសញ្ញា",animationType:"flip"},
+{word:"Cooperation",meaning:"合作",khmer:"កិច្ចសហប្រតិបត្តិការ",animationType:"wave"},
+{word:"Creativity",meaning:"创造力",khmer:"ភាពច្នៃប្រឌិត",animationType:"pulse"},
+{word:"Decade",meaning:"十年",khmer:"ទសវត្សរ៍",animationType:"spin"},
+{word:"Deforestation",meaning:"砍伐森林",khmer:"ការកាប់ព្រៃ",animationType:"sway"},
+{word:"Demonstration",meaning:"示范",khmer:"ការបង្ហាញ",animationType:"wave"},
+{word:"Determination",meaning:"决心",khmer:"ការតាំងចិត្ត",animationType:"pulse"},
+{word:"Discrimination",meaning:"歧视",khmer:"ការរើសអើង",animationType:"shake"},
+{word:"Diversity",meaning:"多样性",khmer:"ចម្រុះ",animationType:"sway"},
+{word:"Documentary",meaning:"纪录片",khmer:"ភាពយន្តឯកសារ",animationType:"flip"},
+{word:"Ecological",meaning:"生态的",khmer:"អេកូឡូស៊ី",animationType:"sway"},
+{word:"Economics",meaning:"经济学",khmer:"សេដ្ឋកិច្ច",animationType:"rise"},
+{word:"Emission",meaning:"排放",khmer:"ការបំភាយ",animationType:"rise"},
+{word:"Empathy",meaning:"同理心",khmer:"ការយល់ចិត្ត",animationType:"pulse"},
+{word:"Endangered",meaning:"濒危的",khmer:"ជិតផុតពូជ",animationType:"sway"},
+{word:"Entrepreneur",meaning:"企业家",khmer:"អ្នកសហគ្រិន",animationType:"bounce"},
+{word:"Establishment",meaning:"建立",khmer:"ការបង្កើត",animationType:"rise"},
+{word:"Experiment",meaning:"实验",khmer:"ការពិសោធ",animationType:"pulse"},
+{word:"Exploitation",meaning:"开发利用",khmer:"ការ착取",animationType:"wave"},
+{word:"Expression",meaning:"表达",khmer:"ការបញ្ចេញ",animationType:"wave"},
+{word:"Extinction",meaning:"灭绝",khmer:"ការផុតពូជ",animationType:"sway"},
+{word:"Fundamental",meaning:"基本的",khmer:"មូលដ្ឋាន",animationType:"rise"},
+{word:"Globalization",meaning:"全球化",khmer:"សាកលភាវូបនីយកម្ម",animationType:"spin"},
+{word:"Hypothesis",meaning:"假说",khmer:"ការសន្មត",animationType:"pulse"},
+{word:"Identification",meaning:"识别",khmer:"ការស្គាល់",animationType:"pulse"},
+{word:"Infrastructure",meaning:"基础设施",khmer:"ហេដ្ឋារចនាសម្ព័ន្ធ",animationType:"rise"},
+{word:"Integrity",meaning:"诚信",khmer:"ភាពស្មោះត្រង់",animationType:"pulse"},
+{word:"Investigation",meaning:"调查",khmer:"ការស៊ើបអង្កេត",animationType:"spin"},
+{word:"Legislation",meaning:"立法",khmer:"ការ立法",animationType:"flip"},
+{word:"Methodology",meaning:"方法论",khmer:"វិធីសាស្ត្រ",animationType:"flip"},
+{word:"Modification",meaning:"修改",khmer:"ការកែប្រែ",animationType:"flip"},
+{word:"Observation",meaning:"观察",khmer:"ការសង្កេត",animationType:"pulse"},
+{word:"Organization",meaning:"组织",khmer:"អង្គការ",animationType:"spin"},
+{word:"Phenomenon",meaning:"现象",khmer:"បាតុភូត",animationType:"pulse"},
+{word:"Preservation",meaning:"保存",khmer:"ការថែរក្សា",animationType:"rise"},
+{word:"Productivity",meaning:"生产力",khmer:"ផលិតភាព",animationType:"rise"},
+{word:"Qualification",meaning:"资格",khmer:"គុណវុឌ្ឍ",animationType:"rise"},
+{word:"Reformation",meaning:"改革",khmer:"កំណែទំរង់",animationType:"spin"}
+]
+};
+
+const shapeHTML={
+  bounce:`<div class="shadow-dot"></div><div class="shape" style="width:60px;height:60px;background:#FFD600;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;">⭐</div>`,
+  rise:`<div class="shape" style="width:56px;height:56px;background:#81D4FA;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:30px;">☁️</div>`,
+  sway:`<div class="shape" style="width:24px;height:80px;background:#81C784;border-radius:12px;display:flex;align-items:center;justify-content:center;padding-top:4px;font-size:22px;">🌿</div>`,
+  pulse:`<div class="shape" style="width:64px;height:64px;background:#FF8A65;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;">☀️</div>`,
+  spin:`<div class="shape" style="width:60px;height:60px;background:#CE93D8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;">🌀</div>`,
+  wave:`<div class="shape" style="width:60px;height:40px;background:#4FC3F7;border-radius:30px;display:flex;align-items:center;justify-content:center;font-size:28px;">🌊</div>`,
+  flip:`<div class="shape" style="width:54px;height:70px;background:#A5D6A7;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:30px;">📖</div>`,
+  shake:`<div class="shape" style="width:54px;height:54px;background:#FFAB40;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:30px;">⚡</div>`
+};
+
+const gradeNames={grade1:"一年级",grade2:"二年级",grade3:"三年级",grade4:"四年级",grade5:"五年级",grade6:"六年级"};
+const STORAGE_KEY="ev_progress_v1";
+
+function loadProgress(){try{const s=localStorage.getItem(STORAGE_KEY);return s?JSON.parse(s):{}}catch(e){return{}}}
+function saveProgress(grade,idx){const p=loadProgress();p[grade]=idx;try{localStorage.setItem(STORAGE_KEY,JSON.stringify(p))}catch(e){}}
+function getProgress(grade){const p=loadProgress();const idx=parseInt(p[grade])||0;const len=englishVocabulary[grade].length;return(idx>=0&&idx<len)?idx:0}
+
+let currentGrade="grade1";
+let currentIdx=getProgress("grade1");
+
+const wordEn=document.getElementById("wordEn");
+const wordKhmer=document.getElementById("wordKhmer");
+const wordZh=document.getElementById("wordZh");
+const stage=document.getElementById("stage");
+const counter=document.getElementById("counter");
+const gradeLabel=document.getElementById("gradeLabel");
+const gradeTabs=document.getElementById("gradeTabs");
+
+Object.keys(gradeNames).forEach(key=>{
+  const btn=document.createElement("button");
+  btn.className="grade-btn"+(key===currentGrade?" active":"");
+  btn.textContent=gradeNames[key];
+  btn.onclick=()=>selectGrade(key);
+  gradeTabs.appendChild(btn);
+});
+
+function selectGrade(key){
+  saveProgress(currentGrade,currentIdx);
+  currentGrade=key;
+  currentIdx=getProgress(key);
+  gradeTabs.querySelectorAll(".grade-btn").forEach((b,i)=>{
+    b.classList.toggle("active",Object.keys(gradeNames)[i]===key);
+  });
+  renderCard();
+}
+
+function renderCard(){
+  const list=englishVocabulary[currentGrade];
+  const item=list[currentIdx];
+  const anim=item.animationType||"bounce";
+  wordEn.textContent=item.word;
+  wordKhmer.textContent=item.khmer||"";
+  wordZh.textContent=item.meaning;
+  stage.className="stage anim-"+anim;
+  stage.innerHTML=shapeHTML[anim]||shapeHTML.bounce;
+  counter.textContent=(currentIdx+1)+" / "+list.length;
+  gradeLabel.textContent=gradeNames[currentGrade];
+  saveProgress(currentGrade,currentIdx);
+}
+
+// ── 100% offline Web Speech API ──
+function speak(word){
+  if(!("speechSynthesis" in window))return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(word);
+  u.lang="en-US";
+  u.rate=0.82;
+  u.pitch=1;
+  // prefer a US English voice if available, works fully offline
+  const voices=speechSynthesis.getVoices();
+  const usVoice=voices.find(v=>v.lang==="en-US"&&v.localService)||voices.find(v=>v.lang==="en-US")||null;
+  if(usVoice)u.voice=usVoice;
+  speechSynthesis.speak(u);
+}
+// voices may load async on some browsers
+if(speechSynthesis.onvoiceschanged!==undefined){speechSynthesis.onvoiceschanged=()=>{}}
+
+// ── Auto-play ──
+let autoTimer=null;
+const btnAuto=document.getElementById("btnAuto");
+function stopAuto(){
+  if(autoTimer){clearInterval(autoTimer);autoTimer=null;}
+  btnAuto.classList.remove("on");
+  btnAuto.innerHTML="&#x23F0; &#x81EA;&#x52A8;&#x8FDE;&#x64AD;";
+}
+function startAuto(){
+  btnAuto.classList.add("on");
+  btnAuto.innerHTML="&#x23F9; &#x505C;&#x6B62;&#x8FDE;&#x64AD;";
+  speak(englishVocabulary[currentGrade][currentIdx].word);
+  autoTimer=setInterval(()=>{
+    const len=englishVocabulary[currentGrade].length;
+    currentIdx=(currentIdx+1)%len;
+    renderCard();
+    speak(englishVocabulary[currentGrade][currentIdx].word);
+  },4000);
+}
+btnAuto.onclick=()=>{if(autoTimer)stopAuto();else startAuto()};
+
+function navTo(dir){
+  stopAuto();
+  const len=englishVocabulary[currentGrade].length;
+  currentIdx=(currentIdx+dir+len)%len;
+  renderCard();
+}
+document.getElementById("btnPrev").onclick=()=>navTo(-1);
+document.getElementById("btnNext").onclick=()=>navTo(1);
+document.getElementById("btnPlay").onclick=()=>speak(englishVocabulary[currentGrade][currentIdx].word);
+
+// ── Confetti ──
+const canvas=document.getElementById("confettiCanvas");
+const ctx=canvas.getContext("2d");
+let particles=[];
+const COLORS=["#ff595e","#ffca3a","#6a4c93","#1982c4","#8ac926","#ff6d00","#f72585","#4cc9f0"];
+function spawnConfetti(){
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  particles=[];
+  for(let i=0;i<200;i++){
+    const ang=Math.random()*Math.PI*2;
+    const spd=4+Math.random()*9;
+    particles.push({x:canvas.width/2,y:canvas.height*0.45,vx:Math.cos(ang)*spd*(0.5+Math.random()),vy:Math.sin(ang)*spd-7-Math.random()*6,w:7+Math.random()*8,h:4+Math.random()*5,color:COLORS[Math.floor(Math.random()*COLORS.length)],rot:Math.random()*360,rotV:(Math.random()-.5)*12,life:1});
+  }
+  animConfetti();
+}
+function animConfetti(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  let alive=false;
+  for(const p of particles){
+    p.x+=p.vx;p.y+=p.vy;p.vy+=0.35;p.rot+=p.rotV;p.life-=0.011;
+    if(p.life<=0)continue;alive=true;
+    ctx.save();ctx.globalAlpha=p.life;ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.color;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();
+  }
+  if(alive)requestAnimationFrame(animConfetti);
+  else ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+document.getElementById("btnKnow").onclick=()=>{
+  spawnConfetti();
+  try{
+    const ac=new(window.AudioContext||window.webkitAudioContext)();
+    [523,659,784,1046].forEach((f,i)=>{
+      const o=ac.createOscillator();const g=ac.createGain();
+      o.connect(g);g.connect(ac.destination);o.frequency.value=f;o.type="sine";
+      g.gain.setValueAtTime(0,ac.currentTime+i*.1);g.gain.linearRampToValueAtTime(.25,ac.currentTime+i*.1+.02);g.gain.linearRampToValueAtTime(0,ac.currentTime+i*.1+.18);
+      o.start(ac.currentTime+i*.1);o.stop(ac.currentTime+i*.1+.2);
+    });
+  }catch(e){}
+};
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight")navTo(1);
+  if(e.key==="ArrowLeft")navTo(-1);
+  if(e.key===" "){e.preventDefault();speak(englishVocabulary[currentGrade][currentIdx].word);}
+});
+
+renderCard();
+</script>
+</body>
+</html>
